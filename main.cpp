@@ -5,10 +5,26 @@
 using namespace std;
 
 class Solution {
+  int furthest(const vector<int> &heights, int from, int bricks, int ladders) {
+    int to = from + 1;
+    while (to < heights.size()) {
+      int h = heights[to] - heights[from];
+      if (0 < h) { break; }
+      ++to, ++from;
+    }
+    if (to < heights.size()) {
+      int h = heights[to] - heights[from];
+      int pos_ladder = (0 < ladders) ? furthest(heights, to, bricks, ladders - 1) : from;
+      int pos_bricks = (h <= bricks) ? furthest(heights, to, bricks - h, ladders) : from;
+      return max(pos_ladder, pos_bricks);
+    }
+
+    return from;
+  }
+
  public:
   int furthestBuilding(vector<int> &heights, int bricks, int ladders) {
-    // FIXME
-    return 0;
+    return furthest(heights, 0, bricks, ladders);
   }
 };
 
