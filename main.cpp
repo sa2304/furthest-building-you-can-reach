@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -5,26 +6,37 @@
 using namespace std;
 
 class Solution {
-  int furthest(const vector<int> &heights, int from, int bricks, int ladders) {
-    int to = from + 1;
-    while (to < heights.size()) {
-      int h = heights[to] - heights[from];
-      if (0 < h) { break; }
-      ++to, ++from;
-    }
-    if (to < heights.size()) {
-      int h = heights[to] - heights[from];
-      int pos_ladder = (0 < ladders) ? furthest(heights, to, bricks, ladders - 1) : from;
-      int pos_bricks = (h <= bricks) ? furthest(heights, to, bricks - h, ladders) : from;
-      return max(pos_ladder, pos_bricks);
+  vector<int> GetClimbs_(const vector<int>& heights) {
+    vector<int> climbs;
+    auto first = heights.begin();
+    auto second = next(first);
+    while (heights.end() != second) {
+      climbs.push_back(*second++ - *first++);
     }
 
-    return from;
+    return climbs;
   }
 
  public:
   int furthestBuilding(vector<int> &heights, int bricks, int ladders) {
-    return furthest(heights, 0, bricks, ladders);
+    vector<int> climbs = GetClimbs_(heights);
+    while (!climbs.empty()) {
+      vector<int> ordered_climbs = climbs;
+      sort(ordered_climbs.begin(), ordered_climbs.end());
+      int b = bricks, l = ladders;
+      for (int i = ordered_climbs.size() - 1; 0 <= i; --i) {
+        if (0 < ordered_climbs[i]) {
+          if (0 < l) { --l; }
+          else if (ordered_climbs[i] <= b) { b -= ordered_climbs[i]; }
+          else { break; }
+        }
+        ordered_climbs.pop_back();
+      }
+      if (ordered_climbs.empty()) { break; }
+      climbs.pop_back();
+    }
+
+    return climbs.size();
   }
 };
 
