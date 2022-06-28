@@ -28,7 +28,7 @@ class Solution {
  public:
   int furthestBuilding(vector<int> &heights, int bricks, int ladders) {
     vector<int> climbs = GetClimbs_(heights);
-    set<int> jumps;
+    multiset<int> jumps;
     int bricks_required = 0;
     int i = 0;
     for (; i < climbs.size(); ++i) {
@@ -47,6 +47,7 @@ class Solution {
       }
       if (bricks < bricks_required) { break; }
     }
+    while (i < climbs.size() && climbs[i] <= 0) { ++i; }
 
     return i;
   }
